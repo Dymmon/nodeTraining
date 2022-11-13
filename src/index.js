@@ -15,7 +15,7 @@ app.get("/healthcheck", (req, res) => {
 app.use(express.json());
 app.use("/v1/login", v1Router);
 
-mongoose.connect("mongodb://127.0.0.1:27017/TRAINING", (err, res) => {
+mongoose.connect(config.db, (err, res) => {
     if(err){
         return console.log(`DB connection error: ${err}`);
     }
