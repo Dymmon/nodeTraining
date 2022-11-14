@@ -6,7 +6,7 @@ function createToken (user){
     const payload = {
         sub: user.rut,
         iat: moment().unix(),
-        exp: moment().add(15, 'seconds').unix()
+        exp: moment().add(15, 'minutes').unix()
     }
 
     return jwt.encode(payload, config.SECRET_TOKEN)

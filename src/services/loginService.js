@@ -12,7 +12,6 @@ function signUpService(req){
         if(err) return {response: `Error creating new user: ${err}`};
         return {response: service.createToken(user)};
     })
-    return "aaaa";
 }
 
 module.exports = {signUpService};
