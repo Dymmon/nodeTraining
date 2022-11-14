@@ -9,8 +9,8 @@ export class Componente1{
     public comentario: string;
     public year: number ;
     constructor(){
-        this.titulo = "Tremendo el componente1"
-        this.comentario = "Este"
+        this.titulo = "clase componente 1"
+        this.comentario = "dentro del constructor"
         this.year = 2022
     }
 }
