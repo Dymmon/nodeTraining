@@ -6,7 +6,7 @@ const Schema = mongoose.Schema;
 const UserSchema = new Schema({
     rut:{type: String, unique: true},
     dv: String,
-    password: {type: String, select: false}
+    password: {type: String, select: true}
 });
 
 UserSchema.pre('save', function(next){

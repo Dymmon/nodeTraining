@@ -1,10 +1,20 @@
 const loginModule = require("../modules/loginModule");
+const signUpModule = require("../modules/signUpModule");
+const signInModule = require("../modules/signInModule")
 
 const checkCredentials = (req, res) =>{
-    let {body} = req;
-    const {headers} = req;
-    const response = loginModule.credentials(headers.rut, headers.dv, body.password, res);
+    const response = loginModule.credentials(req, res);
     return response;
 };
 
-module.exports = {checkCredentials};
+const signUp = (req,res) =>{
+    const response = signUpModule.signUp(req,res);
+    return response;
+};
+
+const signIn = (req,res) =>{
+    const response = signInModule.signIn(req,res);
+    return response;
+};
+
+module.exports = {checkCredentials, signUp, signIn};

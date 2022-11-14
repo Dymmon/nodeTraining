@@ -1,4 +1,3 @@
-const loginService = require("../services/loginService");
 
 const validate = (rut, dv) =>{
     let suma = 0, num = 2;
@@ -25,20 +24,14 @@ const validate = (rut, dv) =>{
     }
    
 };
-const credentials = (reqRut, reqDv, reqPassword, res) =>{
-    const rut = reqRut;
-    const dv = reqDv;
-    const password = reqPassword;
-    let response;
+const credentials = (req) =>{
+    const rut = req.headers.rut;
+    const dv = req.headers.dv;
+    const password = req.body.password;
     if(!password || !rut || !dv || !validate(rut, dv)){
-        response = {code:500, data: "Missing info"};
-        return res.status(500).send(response);
+        return false;
     }
-    response = {code: 200, data: {
-        "rut": rut,
-        "dv": dv,
-        "password": password
-    }};
-    return res.status(200).send(response);
+    return true;
 };
+
 module.exports = {credentials};
