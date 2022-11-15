@@ -1,0 +1,25 @@
+<div class="container">
+    <div class="row">
+        <div class="card">
+            <div class="text-center">
+                <h1>Login</h1>
+                <h5>Please login</h5>
+                <form>
+                    <form [formGroup]= "signInForm">
+                        <div class="mb-3">
+                          <label for="exampleInputRut1" class="form-label">Rut </label>
+                          <input formControlName="rut" type="text" class="form-control" id="exampleInputRut1" aria-describedby="rutHelp">
+                          <div id="rutHelp" class="form-text"> Enter your rut </div>
+                        </div>
+                        <div class="mb-3">
+                          <label for="exampleInputPassword1" class="form-label">Password </label>
+                          <input formControlName="pass" type="password" class="form-control" id="exampleInputPassword1">
+                        </div>
+                        <button (click)="signIn()" type="submit" class="loginButton">Login</button>
+                      </form>
+                      <a style="color: #ffff;" routerLink="/signup">Sign up now</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
