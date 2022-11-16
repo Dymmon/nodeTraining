@@ -9,7 +9,6 @@ function signUp(req, res){
         dv: req.headers.dv,
         password: req.body.password
     })
-    console.log("****")
     user.save((err) =>{
         if(err) return res.status(500).send({message: `Error creating new user: ${err}`})
         return res.status(200).send({token: loginToken.createToken(user)})

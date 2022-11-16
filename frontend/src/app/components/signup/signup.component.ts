@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators  } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 
@@ -15,9 +15,9 @@ export class SignupComponent implements OnInit {
 
   ngOnInit(): void {
     this.signUpForm = this.formBuilder.group({
-      rut: [''],
-      pass1: [''],
-      pass2: [''],
+      rut: ['', Validators.required],
+      pass1: ['', Validators.required],
+      pass2: ['', Validators.required],
     })
   }
   validate = (rut: String, dv: String) =>{

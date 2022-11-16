@@ -8,8 +8,8 @@ router
     .post("/", loginController.checkCredentials)
     .post("/signup", loginController.signUp)
     .post("/signin", loginController.signIn)
-    .get("/testing", auth.isAuth, (req, res) =>{
-        return res.status(200).send({message: "Done"})
+    .get("/done", auth.isAuth, (req, res) =>{
+        return res.status(200).send({code: 200, message: "Done"})
     })
 
 module.exports = router;

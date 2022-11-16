@@ -6,9 +6,7 @@ async function signIn(req, res){
     try {
         const user = await userModel.findOne({rut: req.headers.rut});
         const response = await compare(req.body.password, user.password);
-        console.log(response);
         if(response) return res.status(200).send({
-            message: "logged in",
             token: service.createToken(user)
         });
     } catch (error) {

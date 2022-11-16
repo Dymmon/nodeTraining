@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 
@@ -15,14 +15,16 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.signInForm = this.formBuilder.group({
-      rut: [''],
-      pass: [''],
+      rut: ['', Validators.required],
+      pass: ['', Validators.required],
     })
   }
   signIn(){
     const pass = this.signInForm.value["pass"];
-    if(this.signInForm.value["rut"] && this.signInForm.value["pass"]){
-      let rut = this.signInForm.value["rut"];
+    let rut = this.signInForm.value["rut"];
+    const length = rut.length
+    const val = (7< length && length<10)
+    if(rut && pass && val){
       const dv = rut.slice(-1);
       rut = rut.substring(0, rut.length - 1);
       const headers = new HttpHeaders({
@@ -34,13 +36,20 @@ export class LoginComponent implements OnInit {
       if(res["token"]){
         alert("SignIn Successfull");
         this.signInForm.reset();
-        this.router.navigate(['login'])
+        const header = new HttpHeaders({'authorization': res['token']})
+        this.http.get<any>('http://localhost:25565/v1/login/done',
+        {headers: header}).subscribe(response=>{
+          if(response["code"] === 200){
+            this.router.navigate(['done'])
+          }else{
+            alert("Unauthorized acces")
+          }
+        })
       }else{
         alert("Invalid Username or password")
       }
     },err=>{
       alert("Something went wrong")
-      console.log(err);
     })
     }else{
       alert("Missing data")

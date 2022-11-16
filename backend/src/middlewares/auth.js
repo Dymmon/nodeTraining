@@ -3,9 +3,8 @@ const loginToken = require("../modules/loginToken")
 
 function isAuth(req, res, next){
     if(!req.headers.authorization){
-        return res.status(403).send({message: "unauthorized access"})
+        return res.status(403).send({code: 403, message: "unauthorized access"})
     }
-    //const token = req.headers.Authorization.split(" ")[1];
     const token = req.headers.authorization
     loginToken.decodeToken(token)
         .then((response) =>{
