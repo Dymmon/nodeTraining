@@ -15,20 +15,18 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.signInForm = this.formBuilder.group({
-      rut: ['', Validators.required],
+      rut: ['', [Validators.required, Validators.minLength(7), Validators.maxLength(10)]],
       pass: ['', Validators.required],
     })
   }
   signIn(){
     const pass = this.signInForm.value["pass"];
-    let rut = this.signInForm.value["rut"];
-    const length = rut.length
-    const val = (7< length && length<10)
-    if(rut && pass && val){
+    const rut = this.signInForm.value["rut"];
+    if(this.signInForm.valid){
       const dv = rut.slice(-1);
-      rut = rut.substring(0, rut.length - 1);
+      const digits = rut.substring(0, rut.length - 1);
       const headers = new HttpHeaders({
-        'rut': rut,
+        'rut': digits,
         'dv': dv
       })
       this.http.post<any>('http://localhost:25565/v1/login/signin',
@@ -40,7 +38,7 @@ export class LoginComponent implements OnInit {
         this.http.get<any>('http://localhost:25565/v1/login/done',
         {headers: header}).subscribe(response=>{
           if(response["code"] === 200){
-            this.router.navigate(['done'])
+            this.router.navigate(['done'],{queryParams:{token: res['token']}});
           }else{
             alert("Unauthorized acces")
           }
