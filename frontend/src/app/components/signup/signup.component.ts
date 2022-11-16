@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators  } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { LoginService } from 'src/app/services/login.service';
 
 @Component({
   selector: 'app-signup',
@@ -11,11 +12,11 @@ import { Router } from '@angular/router';
 export class SignupComponent implements OnInit {
 
   public signUpForm !: FormGroup;
-  constructor(private formBuilder: FormBuilder, private http: HttpClient, private router: Router) { }
+  constructor(private formBuilder: FormBuilder, private http: HttpClient, private router: Router, private loginService: LoginService) { }
 
   ngOnInit(): void {
     this.signUpForm = this.formBuilder.group({
-      rut: ['', Validators.required],
+      rut: ['', Validators.required, Validators.minLength(7), Validators.maxLength(10)],
       pass1: ['', Validators.required],
       pass2: ['', Validators.required],
     })
@@ -48,23 +49,22 @@ export class SignupComponent implements OnInit {
 
   signUp(){
     const pass = this.signUpForm.value["pass1"];
-    let rut = this.signUpForm.value["rut"];
+    const rut = this.signUpForm.value["rut"];
     const dv = rut.slice(-1);
-    rut = rut.substring(0, rut.length - 1);
+    const digits = rut.substring(0, rut.length - 1);
 
-    if((pass === this.signUpForm.value["pass2"]) && this.validate(rut, dv) ){
+    if(this.validate(digits, dv) && (pass === this.signUpForm.value["pass2"])){
       const headers = new HttpHeaders({
-        'rut': rut,
+        'rut': digits,
         'dv': dv
       })
-      this.http.post<any>('http://localhost:25565/v1/login/signup',
-      {password: pass},{headers:headers}).subscribe(res=>{
+      this.loginService.postSingUp(pass,headers)
+      .subscribe(res=>{
       alert("Signup Successfull");
       this.signUpForm.reset();
       this.router.navigate(['login'])
     },err=>{
       alert("Something went wrong")
-      console.log(err);
     })
     }else{
       alert("Invalid credentials");

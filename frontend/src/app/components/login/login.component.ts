@@ -3,6 +3,8 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 
+import { LoginService } from 'src/app/services/login.service';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -11,7 +13,7 @@ import { Router } from '@angular/router';
 export class LoginComponent implements OnInit {
 
   public signInForm !: FormGroup ;
-  constructor(private formBuilder: FormBuilder, private http: HttpClient, private router: Router) { }
+  constructor(private formBuilder: FormBuilder, private http: HttpClient, private router: Router, private loginService: LoginService) { }
 
   ngOnInit(): void {
     this.signInForm = this.formBuilder.group({
@@ -19,6 +21,7 @@ export class LoginComponent implements OnInit {
       pass: ['', Validators.required],
     })
   }
+  
   signIn(){
     const pass = this.signInForm.value["pass"];
     const rut = this.signInForm.value["rut"];
@@ -29,14 +32,14 @@ export class LoginComponent implements OnInit {
         'rut': digits,
         'dv': dv
       })
-      this.http.post<any>('http://localhost:25565/v1/login/signin',
-      {password: pass},{headers:headers}).subscribe(res=>{
+      this.loginService.postLogin(pass, headers)
+      .subscribe(res=>{
       if(res["token"]){
         alert("SignIn Successfull");
         this.signInForm.reset();
         const header = new HttpHeaders({'authorization': res['token']})
-        this.http.get<any>('http://localhost:25565/v1/login/done',
-        {headers: header}).subscribe(response=>{
+        this.loginService.getDone(header)
+        .subscribe(response=>{
           if(response["code"] === 200){
             this.router.navigate(['done'],{queryParams:{token: res['token']}});
           }else{
