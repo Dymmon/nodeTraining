@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators  } from '@angular/forms';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { LoginService } from 'src/app/services/login.service';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-signup',
@@ -12,7 +13,7 @@ import { LoginService } from 'src/app/services/login.service';
 export class SignupComponent implements OnInit {
 
   public signUpForm !: FormGroup;
-  constructor(private formBuilder: FormBuilder, private http: HttpClient, private router: Router, private loginService: LoginService) { }
+  constructor(private formBuilder: FormBuilder, private router: Router, private loginService: LoginService) { }
 
   ngOnInit(): void {
     this.signUpForm = this.formBuilder.group({
@@ -58,7 +59,8 @@ export class SignupComponent implements OnInit {
         'rut': digits,
         'dv': dv
       })
-      this.loginService.postSingUp(pass,headers)
+      //this.loginService.postSingUp(pass,headers)
+      this.reqs(pass, headers)
       .subscribe(res=>{
       alert("Signup Successfull");
       this.signUpForm.reset();
@@ -70,4 +72,8 @@ export class SignupComponent implements OnInit {
       alert("Invalid credentials");
     }
   }
+  reqs(pass: String, headers: HttpHeaders){
+    return this.loginService.postSingUp(pass, headers).pipe(take(1))
+  }
+
 }

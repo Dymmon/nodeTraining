@@ -9,7 +9,7 @@ router
     .post("/signup", loginController.signUp)
     .post("/signin", loginController.signIn)
     .get("/done", auth.isAuth, (req, res) =>{
-        return res.status(200).send({code: 200, message: "Done"})
+        return res.status(200).send({code: 200, message: "Done", token : req.headers.authorization})
     })
 
 module.exports = router;
