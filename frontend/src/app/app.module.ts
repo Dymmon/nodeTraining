@@ -6,18 +6,22 @@ import {HttpClientModule} from '@angular/common/http'
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { LoginComponent } from './components/login/login.component';
-import { SignupComponent } from './components/signup/signup.component';
 import { DoneComponent } from './components/done/done.component';
 import { ErrorComponent } from './components/error/error.component';
+import { RutLoginComponent } from './components/rut-login/rut-login.component';
+import { PassLoginComponent } from './components/pass-login/pass-login.component';
+import { RutSignUpComponent } from './components/rut-sign-up/rut-sign-up.component';
+import { PassSignUpComponent } from './components/pass-sign-up/pass-sign-up.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent,
-    SignupComponent,
     DoneComponent,
-    ErrorComponent
+    ErrorComponent,
+    RutLoginComponent,
+    PassLoginComponent,
+    RutSignUpComponent,
+    PassSignUpComponent
   ],
   imports: [
     BrowserModule,

@@ -2,6 +2,15 @@ const service = require("../modules/loginToken");
 const userModel = require("../models/user");
 const bcrypt = require("bcrypt-nodejs");
 
+async function rutInDB(req, res){
+    try {
+        const user = await userModel.findOne({rut: req.headers.rut, dv:req.headers.dv});
+        return (user? res.send({code:200}) : res.send({code:500}));
+    } catch (error) {
+        return res.status(500).send({code: 500, message: error});
+    }
+}
+
 async function signIn(req, res){
     try {
         const user = await userModel.findOne({rut: req.headers.rut});
@@ -24,4 +33,7 @@ function compare(password1, password2){
 
 }
 
-module.exports = {signIn};
+module.exports = {
+    rutInDB,
+    signIn
+};

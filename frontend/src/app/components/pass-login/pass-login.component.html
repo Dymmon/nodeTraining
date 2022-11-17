@@ -1,0 +1,21 @@
+<div class="container">
+    <div class="row">
+        <div class="card">
+            <div class="text-center">
+                <h1>Login</h1>
+                <h5>Please login</h5>
+                <form>
+                    <form [formGroup]= "signInForm">
+                        <div class="form-group">
+                          <label for="exampleInputPassword1" class="form-label">Password </label>
+                          <input formControlName="pass" type="password" class="form-control" id="exampleInputPassword1">
+                          <span class="text-danger" *ngIf="signInForm.controls['pass'].dirty && signInForm.hasError('required','pass')">Password required</span>
+                        </div>
+                        <button (click)="signIn()" type="submit" class="loginButton">Login</button>
+                      </form>
+                      <a style="color: #ffff;" routerLink="/signup">Sign up now</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
