@@ -12,19 +12,31 @@ const signUp = (req,res) =>{
     return response;
 };
 
-const rutInDB = (req,res) =>{
+const loginRutInDB = (req,res) =>{
     const response = signInModule.rutInDB(req, res);
     return response;
 }
 
+const signUpRutInDB = (req, res) =>{
+    const response = signUpModule.rutInDB(req, res);
+    return response;
+}
+
 const signIn = (req,res) =>{
-    const response = signInModule.signIn(req,res);
+    const response = signInModule.signIn(req, res);
     return response;
 };
+
+const getPubPem = (req, res) =>{
+    const response = signInModule.getPubPem(req, res);
+    return response;
+}
 
 module.exports = {
     checkCredentials,
     signUp,
-    rutInDB,
-    signIn
+    signUpRutInDB,
+    loginRutInDB,
+    signIn,
+    getPubPem
 };

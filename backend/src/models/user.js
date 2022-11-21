@@ -6,7 +6,9 @@ const Schema = mongoose.Schema;
 const UserSchema = new Schema({
     rut:{type: String, unique: true},
     dv: String,
-    password: {type: String, select: true}
+    password: {type: String, select: true},
+    pubPem: String,
+    privPem: String
 });
 
 UserSchema.pre('save', function(next){
@@ -24,6 +26,7 @@ UserSchema.pre('save', function(next){
         })
     })
 })
+
 
 module.exports = mongoose.model('User', UserSchema);
 

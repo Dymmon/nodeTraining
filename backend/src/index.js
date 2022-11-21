@@ -4,8 +4,6 @@ const cors = require("cors")
 const express = require("express");
 const v1Router = require("./v1/routes/loginRoutes");
 
-
-
 const app = express();
 const PORT = config.port;
 

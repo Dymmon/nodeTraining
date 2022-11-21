@@ -53,12 +53,12 @@ export class RutSignUpComponent implements OnInit {
 
     (this.validate(digits, dv) && this.signUpForm.valid)?
     this.inDB(rut).subscribe(res=>{
-      (res.code === 500)?this.router.navigate(['signup/password'], {queryParams:{rut: rut}}): alert("Invalid data")
+      (res.code === 200)?this.router.navigate(['signup/password'], {queryParams:{rut: rut}}): alert("Invalid data")
     }): alert("Invalid data");
   }
   inDB(rut: string){
     const headers = new HttpHeaders({'dv':rut.slice(-1), 'rut': rut.substring(0, rut.length - 1)});
-    return this.loginService.inDB(headers).pipe(take(1))
+    return this.loginService.sUpInDB(headers).pipe(take(1))
   }
 
 }

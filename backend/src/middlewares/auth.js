@@ -1,4 +1,3 @@
-const { response } = require("express");
 const loginToken = require("../modules/loginToken")
 
 function isAuth(req, res, next){

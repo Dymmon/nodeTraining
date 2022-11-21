@@ -4,6 +4,8 @@ import { HttpHeaders } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoginService } from 'src/app/services/login.service';
 import { catchError, concatMap, of, take, throwError } from 'rxjs';
+import { JSEncrypt } from 'jsencrypt'
+
 
 @Component({
   selector: 'app-pass-sign-up',
@@ -58,17 +60,47 @@ export class PassSignUpComponent implements OnInit {
 
   signUp(){
     const pass = this.signUpForm.value["pass1"];
-    (pass === this.signUpForm.value["pass2"])?this.consecutiveReqs(pass).
-    subscribe(res =>{
+    (pass === this.signUpForm.value["pass2"])?this.getKeyRut()
+    .subscribe(res =>{
       alert("Signup Successfull");
       this.router.navigate(['login']);
     })
     :alert("Invalid credentials");
   }
+
+  getKeyRut(){
+    return this.url.queryParams.pipe(take(1),
+    concatMap((result)=>{
+      if(result['rut']){
+        const rut = result['rut'];
+        const headers = new HttpHeaders({
+          'dv': rut.slice(-1),
+          'rut': rut.substring(0, rut.length - 1)
+        });
+        return this.loginService.getPubPem(headers).pipe(take(1),
+        concatMap((result) =>{
+          if(result.pubPem){
+            var encrypt = new JSEncrypt({default_key_size: '2048'});
+            encrypt.setPublicKey(result.pubPem);
+            const encryptedPass = encrypt.encrypt(this.signUpForm.value['pass1']);
+            const headers = new HttpHeaders({
+              'dv': result.dv,
+              'rut': result.rut
+            });
+            return this.consecutiveReqs(encryptedPass)
+          }
+          return of({})
+        })
+        )
+      }
+      return of({});
+    }));
+  }
+
   Reqs2(){
     return this.url.queryParams.pipe(take(1))
   }
-  consecutiveReqs(pass:String){
+  consecutiveReqs(pass:any){
     return this.Reqs2().pipe(take(1),
     concatMap((res) =>{
       if(res){

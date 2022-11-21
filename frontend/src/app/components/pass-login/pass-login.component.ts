@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { HttpHeaders } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
+import { JSEncrypt } from 'jsencrypt'
 
 import { LoginService } from 'src/app/services/login.service';
 import { catchError, concatMap, of, take, throwError } from 'rxjs';
@@ -19,7 +20,7 @@ export class PassLoginComponent implements OnInit {
     private loginService: LoginService, private url: ActivatedRoute) { }
 
   ngOnInit(): void {
-    this.consecutiveReqs2()
+    this.consecutiveValid()
     .subscribe(res=>{
       if(res.code != 200) this.router.navigate(['login']);
     })
@@ -30,39 +31,52 @@ export class PassLoginComponent implements OnInit {
   
   signIn(){
     if(this.signInForm.valid){
-    this.getUrlData(this.signInForm.value["pass"])
+    this.getKeyRut()
     .subscribe(res=>{
       if(res["code"] === 200){
         this.router.navigate(['done'],{queryParams:{token: res['token']}});
       }else{
         alert("Unauthorized acces")
       }
-    })}else{
+    })
+  }else{
       alert("Missing data")
     }
   }
   inDB(rut: string){
     const headers = new HttpHeaders({'dv':rut.slice(-1), 'rut': rut.substring(0, rut.length - 1)});
-    return this.loginService.inDB(headers).pipe(take(1))
+    return this.loginService.lInDB(headers).pipe(take(1))
   }
-
-  getUrlData(pass: string){
+  getKeyRut(){
     return this.url.queryParams.pipe(take(1),
-    concatMap((result) =>{
-      if(result){
+    concatMap((result)=>{
+      if(result['rut']){
         const rut = result['rut'];
         const headers = new HttpHeaders({
           'dv': rut.slice(-1),
           'rut': rut.substring(0, rut.length - 1)
         });
-        return this.consecutiveReqs1(pass, headers);
+        return this.loginService.getPubPem(headers).pipe(take(1),
+        concatMap((result) =>{
+          if(result.pubPem){
+            var encrypt = new JSEncrypt({default_key_size: '2048'});
+            encrypt.setPublicKey(result.pubPem);
+            const encryptedPass = encrypt.encrypt(this.signInForm.value['pass']);
+            const headers = new HttpHeaders({
+              'dv': result.dv,
+              'rut': result.rut
+            });
+            return this.consecutiveReqs1(encryptedPass, headers)
+          }
+          return of({})
+        })
+        )
       }
       return of({});
-    })
-    );
+    }));
   }
 
-  consecutiveReqs1(pass:String, headers: HttpHeaders){
+  consecutiveReqs1(pass: any, headers: HttpHeaders){
     return this.loginService.postLogin(pass, headers).pipe(take(1),
       concatMap((result) =>{
         if(result){
@@ -75,7 +89,7 @@ export class PassLoginComponent implements OnInit {
     );
   }
 
-  consecutiveReqs2(){
+  consecutiveValid(){
     return this.url.queryParams.pipe(take(1),
       concatMap((result) =>{
         if(result){

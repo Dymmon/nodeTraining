@@ -26,24 +26,12 @@ export class RutLoginComponent implements OnInit {
     const rut = this.signInForm.value["rut"];
     (this.signInForm.valid)? this.inDB(rut)
     .subscribe(res=>{
-      (res.code == 200)?this.router.navigate(['login/password'], {queryParams:{rut: rut}}):alert("Missing data");})
+      (res.code === 200)?this.router.navigate(['login/password'], {queryParams:{rut: rut}}):alert("Missing data");})
     : alert("Missing data");
   }
 
   inDB(rut: string){
     const headers = new HttpHeaders({'dv':rut.slice(-1), 'rut': rut.substring(0, rut.length - 1)});
-    return this.loginService.inDB(headers).pipe(take(1))
-  }
-  consecutiveReqs(pass:String, headers: HttpHeaders){
-    return this.loginService.postLogin(pass, headers).pipe(take(1),
-      concatMap((result) =>{
-        if(result){
-          const header = new HttpHeaders({'authorization': result.token});
-          return this.loginService.getDone(header); 
-        }
-        return of({});
-      }),
-      catchError(err => throwError(err))
-    );
+    return this.loginService.lInDB(headers).pipe(take(1))
   }
 }
