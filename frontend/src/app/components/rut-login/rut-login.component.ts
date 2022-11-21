@@ -4,7 +4,7 @@ import { HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 
 import { LoginService } from 'src/app/services/login.service';
-import { catchError, concatMap, of, take, throwError } from 'rxjs';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-rut-login',
