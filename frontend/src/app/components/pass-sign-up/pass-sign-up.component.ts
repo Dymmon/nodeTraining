@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators  } from '@angular/forms';
 import { HttpHeaders } from '@angular/common/http';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { LoginService } from 'src/app/services/login.service';
-import { catchError, concatMap, of, take, throwError } from 'rxjs';
+import { concatMap, of, take } from 'rxjs';
 import { JSEncrypt } from 'jsencrypt'
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/app.reducers';
+import { rutHeaders } from '../shared/rut.headers';
 
 
 @Component({
@@ -14,49 +17,26 @@ import { JSEncrypt } from 'jsencrypt'
 })
 export class PassSignUpComponent implements OnInit {
 
+  rut: string;
+  headers: HttpHeaders;
   public signUpForm !: FormGroup;
   constructor(
-    private formBuilder: FormBuilder, private router: Router,
-    private loginService: LoginService,  private url: ActivatedRoute) { }
+    private formBuilder: FormBuilder,
+    private router: Router,
+    private loginService: LoginService,
+    private store: Store<AppState>) {
+      this.store.select('rut').subscribe(res=>{
+        (res)?this.rut = res: this.router.navigate(['login']);
+      })
+    }
 
   ngOnInit(): void {
-    this.Reqs2()
-    .subscribe(res=>{
-      const rut = res['rut'];
-      const dv = rut.slice(-1);
-      const digits = rut.substring(0, rut.length - 1);
-      if(!this.validate(digits, dv))this.router.navigate(['login']);
-    })
+    this.headers = rutHeaders(this.rut);
     this.signUpForm = this.formBuilder.group({
       pass1: ['', Validators.required],
       pass2: ['', Validators.required],
     })
   }
-  validate = (rut: String, dv: String) =>{
-    let suma = 0, num = 2;
-    try {
-      while(rut){
-          const temp = rut.slice(-1);
-          rut = rut.substring(0, rut.length - 1);
-          if(num > 7){
-              num = 2;
-          }
-          suma += parseInt(temp) * num;
-          num++;
-      }
-      let sumString = (11 - suma%11).toString();
-      if(sumString == "10"){
-        sumString = "k"
-      }
-      if(sumString == dv){
-          return 1;
-      }
-      return 0; 
-  } catch (error) {
-      return 0;
-  }
-   
-};
 
   signUp(){
     const pass = this.signUpForm.value["pass1"];
@@ -69,47 +49,15 @@ export class PassSignUpComponent implements OnInit {
   }
 
   getKeyRut(){
-    return this.url.queryParams.pipe(take(1),
-    concatMap((result)=>{
-      if(result['rut']){
-        const rut = result['rut'];
-        const headers = new HttpHeaders({
-          'dv': rut.slice(-1),
-          'rut': rut.substring(0, rut.length - 1)
-        });
-        return this.loginService.getPubPem(headers).pipe(take(1),
+    return this.loginService.getPubPem(this.headers).pipe(take(1),
         concatMap((result) =>{
           if(result.pubPem){
             var encrypt = new JSEncrypt({default_key_size: '2048'});
             encrypt.setPublicKey(result.pubPem);
             const encryptedPass = encrypt.encrypt(this.signUpForm.value['pass1']);
-            const headers = new HttpHeaders({
-              'dv': result.dv,
-              'rut': result.rut
-            });
-            return this.consecutiveReqs(encryptedPass)
+            return this.loginService.postSignUp(encryptedPass, this.headers);
           }
           return of({})
-        })
-        )
-      }
-      return of({});
-    }));
-  }
-
-  Reqs2(){
-    return this.url.queryParams.pipe(take(1))
-  }
-  consecutiveReqs(pass:any){
-    return this.Reqs2().pipe(take(1),
-    concatMap((res) =>{
-      if(res){
-        const dv = res['rut'].slice(-1);
-        const digits = res['rut'].substring(0, res['rut'].length - 1);
-        const headers = new HttpHeaders({'rut':digits, 'dv': dv});
-        return this.loginService.postSignUp(pass, headers)
-      }
-      return of({})
-    }), catchError(err => throwError(err)));
+        }));
   }
 }

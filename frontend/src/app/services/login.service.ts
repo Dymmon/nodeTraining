@@ -27,7 +27,7 @@ export class LoginService {
     return this.http.get<any>('http://localhost:25565/v1/login/done',
     {headers: headers})
   }
-  public postSignUp(pass: String, headers: HttpHeaders){
+  public postSignUp(pass: any, headers: HttpHeaders){
     return this.http.post<any>('http://localhost:25565/v1/login/signup',
     {password: pass}, {headers: headers})
   }

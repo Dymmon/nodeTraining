@@ -10,10 +10,10 @@ import { RutSignUpComponent } from './components/rut-sign-up/rut-sign-up.compone
 const routes: Routes = [
   {path: '', redirectTo: 'login', pathMatch: 'full'},
   {path:'login', component: RutLoginComponent},
-  {path: 'login/:password', component: PassLoginComponent},
+  {path: 'login/password', component: PassLoginComponent},
   {path:'signup', component: RutSignUpComponent},
-  {path: 'signup/:password', component: PassSignUpComponent},
-  {path:':done',component: DoneComponent },
+  {path: 'signup/password', component: PassSignUpComponent},
+  {path:'done',component: DoneComponent },
   {path: '**', component: ErrorComponent}
 ];
 

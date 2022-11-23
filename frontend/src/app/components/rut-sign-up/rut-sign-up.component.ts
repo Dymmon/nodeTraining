@@ -4,6 +4,10 @@ import { HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { LoginService } from 'src/app/services/login.service';
 import { take } from 'rxjs';
+import { validate } from '../shared/rut.validate';
+import { AuthRutAction, ResetAction } from '../redux/actions/rut.actions';
+import { AppState } from 'src/app/app.reducers';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'app-rut-sign-up',
@@ -13,47 +17,33 @@ import { take } from 'rxjs';
 export class RutSignUpComponent implements OnInit {
 
   public signUpForm !: FormGroup;
-  constructor(private formBuilder: FormBuilder, private router: Router, private loginService: LoginService) { }
+  constructor(
+    private formBuilder: FormBuilder,
+    private router: Router,
+    private loginService: LoginService,
+    private store: Store<AppState>
+    ) { }
 
   ngOnInit(): void {
+    const action = new ResetAction();
+    this.store.dispatch(action);
     this.signUpForm = this.formBuilder.group({
       rut: ['',[Validators.required, Validators.minLength(7), Validators.maxLength(10)]]
     })
   }
-  validate = (rut: String, dv: String) =>{
-    let suma = 0, num = 2;
-    try {
-      while(rut){
-          const temp = rut.slice(-1);
-          rut = rut.substring(0, rut.length - 1);
-          if(num > 7){
-              num = 2;
-          }
-          suma += parseInt(temp) * num;
-          num++;
-      }
-      let sumString = (11 - suma%11).toString();
-      if(sumString == "10"){
-        sumString = "k"
-      }
-      if(sumString == dv){
-          return 1;
-      }
-      return 0; 
-  } catch (error) {
-      return 0;
-  }
-   
-};
 
   signUp(){
     const rut = this.signUpForm.value["rut"];
     const dv = rut.slice(-1);
     const digits = rut.substring(0, rut.length - 1);
 
-    (this.validate(digits, dv) && this.signUpForm.valid)?
+    (validate(digits, dv) && this.signUpForm.valid)?
     this.inDB(rut).subscribe(res=>{
-      (res.code === 200)?this.router.navigate(['signup/password'], {queryParams:{rut: rut}}): alert("Invalid data")
+      if(res.code === 200){
+        const actionRut = new AuthRutAction(rut);
+        this.store.dispatch(actionRut);
+        this.router.navigate(['signup/password'])
+      }else{alert("Invalid data")}
     }): alert("Invalid data");
   }
   inDB(rut: string){

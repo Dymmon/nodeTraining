@@ -1,11 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { HttpHeaders } from '@angular/common/http';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { JSEncrypt } from 'jsencrypt'
 
 import { LoginService } from 'src/app/services/login.service';
 import { catchError, concatMap, of, take, throwError } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/app.reducers';
+import { rutHeaders } from '../shared/rut.headers';
+import { AuthRutAction } from '../redux/actions/rut.actions';
 
 @Component({
   selector: 'app-pass-login',
@@ -14,16 +18,21 @@ import { catchError, concatMap, of, take, throwError } from 'rxjs';
 })
 export class PassLoginComponent implements OnInit {
 
+  rut: string;
+  headers: HttpHeaders;
   public signInForm !: FormGroup ;
   constructor(
-    private formBuilder: FormBuilder, private router: Router,
-    private loginService: LoginService, private url: ActivatedRoute) { }
+    private formBuilder: FormBuilder,
+    private router: Router,
+    private loginService: LoginService,
+    private store: Store<AppState>) {
+      this.store.select('rut').subscribe(res=>{
+        (res)?this.rut = res: this.router.navigate(['login']);
+      });
+    }
 
   ngOnInit(): void {
-    this.consecutiveValid()
-    .subscribe(res=>{
-      if(res.code != 200) this.router.navigate(['login']);
-    })
+    this.headers = rutHeaders(this.rut);
     this.signInForm = this.formBuilder.group({
       pass: ['', Validators.required],
     })
@@ -34,7 +43,9 @@ export class PassLoginComponent implements OnInit {
     this.getKeyRut()
     .subscribe(res=>{
       if(res["code"] === 200){
-        this.router.navigate(['done'],{queryParams:{token: res['token']}});
+        const actionRut = new AuthRutAction('Authorized');
+        this.store.dispatch(actionRut);
+        this.router.navigate(['done']);
       }else{
         alert("Unauthorized acces")
       }
@@ -43,58 +54,25 @@ export class PassLoginComponent implements OnInit {
       alert("Missing data")
     }
   }
-  inDB(rut: string){
-    const headers = new HttpHeaders({'dv':rut.slice(-1), 'rut': rut.substring(0, rut.length - 1)});
-    return this.loginService.lInDB(headers).pipe(take(1))
-  }
   getKeyRut(){
-    return this.url.queryParams.pipe(take(1),
+    return this.loginService.getPubPem(this.headers).pipe(take(1),
     concatMap((result)=>{
-      if(result['rut']){
-        const rut = result['rut'];
-        const headers = new HttpHeaders({
-          'dv': rut.slice(-1),
-          'rut': rut.substring(0, rut.length - 1)
-        });
-        return this.loginService.getPubPem(headers).pipe(take(1),
-        concatMap((result) =>{
-          if(result.pubPem){
-            var encrypt = new JSEncrypt({default_key_size: '2048'});
-            encrypt.setPublicKey(result.pubPem);
-            const encryptedPass = encrypt.encrypt(this.signInForm.value['pass']);
-            const headers = new HttpHeaders({
-              'dv': result.dv,
-              'rut': result.rut
-            });
-            return this.consecutiveReqs1(encryptedPass, headers)
-          }
-          return of({})
-        })
-        )
+      if(result.pubPem){
+        var encrypt = new JSEncrypt({default_key_size: '2048'});
+        encrypt.setPublicKey(result.pubPem);
+        const encryptedPass = encrypt.encrypt(this.signInForm.value['pass']);
+        return this.toNext(encryptedPass);
       }
       return of({});
-    }));
+    }))
   }
 
-  consecutiveReqs1(pass: any, headers: HttpHeaders){
-    return this.loginService.postLogin(pass, headers).pipe(take(1),
+  toNext(pass: any){
+    return this.loginService.postLogin(pass, this.headers).pipe(take(1),
       concatMap((result) =>{
         if(result){
           const header = new HttpHeaders({'authorization': result.token});
           return this.loginService.getDone(header); 
-        }
-        return of({});
-      }),
-      catchError(err => throwError(err))
-    );
-  }
-
-  consecutiveValid(){
-    return this.url.queryParams.pipe(take(1),
-      concatMap((result) =>{
-        if(result){
-          const rut = result['rut'];
-          return this.inDB(rut); 
         }
         return of({});
       }),
