@@ -13,7 +13,7 @@ async function rutInDB(req, res) {
         { rut: digits },
         { pubPem, privPem }
       );
-      return res.send({ code: 200});
+      return res.send({ code: 200, pubPem});
     }
     return res.send({ code: 500 });
   } catch (error) {
@@ -25,13 +25,9 @@ async function signIn(req, res) {
   try {
     const user = await userModel.findOne({ rut: req.headers.rut });
     const pass = Buffer.from(req.body.password, 'base64');
-    const decrypted = crypto.privateDecrypt(
-    {
-        key: user.privPem,
-        padding: crypto.constants.RSA_PKCS1_PADDING,
-    },
-    pass
-    );
+    const decrypted = crypto.privateDecrypt({
+      key: user.privPem,
+      padding: crypto.constants.RSA_PKCS1_PADDING},pass);
     const decryptedPass = decrypted.toString();
     const response = await compare(decryptedPass, user.password);
     if (response)

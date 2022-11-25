@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { LoginService } from 'src/app/services/login.service';
 import { take } from 'rxjs';
 import { validate } from '../shared/rut.validate';
-import { AuthRutAction, ResetAction } from '../redux/actions/rut.actions';
+//import { AuthRutAction, ResetAction } from '../redux/actions/rut.actions';
 import { AppState } from 'src/app/app.reducers';
 import { Store } from '@ngrx/store';
 
@@ -25,8 +25,8 @@ export class RutSignUpComponent implements OnInit {
     ) { }
 
   ngOnInit(): void {
-    const action = new ResetAction();
-    this.store.dispatch(action);
+    // const action = new ResetAction();
+    // this.store.dispatch(action);
     this.signUpForm = this.formBuilder.group({
       rut: ['',[Validators.required, Validators.minLength(7), Validators.maxLength(10)]]
     })
@@ -40,8 +40,8 @@ export class RutSignUpComponent implements OnInit {
     (validate(digits, dv) && this.signUpForm.valid)?
     this.inDB(rut).subscribe(res=>{
       if(res.code === 200){
-        const actionRut = new AuthRutAction(rut);
-        this.store.dispatch(actionRut);
+        // const actionRut = new AuthRutAction(rut);
+        // this.store.dispatch(actionRut);
         this.router.navigate(['signup/password'])
       }else{alert("Invalid data")}
     }): alert("Invalid data");

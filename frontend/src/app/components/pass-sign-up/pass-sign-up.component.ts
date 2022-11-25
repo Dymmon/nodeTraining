@@ -25,9 +25,9 @@ export class PassSignUpComponent implements OnInit {
     private router: Router,
     private loginService: LoginService,
     private store: Store<AppState>) {
-      this.store.select('rut').subscribe(res=>{
-        (res)?this.rut = res: this.router.navigate(['login']);
-      })
+      // this.store.select('rut').subscribe(res=>{
+      //   (res)?this.rut = res: this.router.navigate(['login']);
+      // })
     }
 
   ngOnInit(): void {

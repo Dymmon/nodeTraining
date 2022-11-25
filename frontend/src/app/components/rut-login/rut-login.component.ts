@@ -5,9 +5,11 @@ import { Router } from '@angular/router';
 
 import { LoginService } from 'src/app/services/login.service';
 import { take } from 'rxjs';
-import { AuthRutAction, ResetAction } from '../redux/actions/rut.actions';
+// import { AuthRutAction, ResetAction } from '../redux/actions/rut.actions';
 import { Store } from '@ngrx/store';
 import { AppState } from 'src/app/app.reducers';
+import { AUTHRUT, RESET } from '../redux/actions/rut.actions';
+import { rutHeaders } from '../shared/rut.headers';
 
 @Component({
   selector: 'app-rut-login',
@@ -24,8 +26,7 @@ export class RutLoginComponent implements OnInit {
     ) { }
 
   ngOnInit(): void {
-    const action = new ResetAction();
-    this.store.dispatch(action);
+    this.store.dispatch(RESET());
     this.signInForm = this.formBuilder.group({
       rut: ['', [Validators.required, Validators.minLength(7), Validators.maxLength(10)]]
     })
@@ -36,15 +37,14 @@ export class RutLoginComponent implements OnInit {
     (this.signInForm.valid)? this.inDB(rut)
     .subscribe(res=>{
       if(res.code === 200){
-        const actionRut = new AuthRutAction(rut);
-        this.store.dispatch(actionRut);
+        this.store.dispatch(AUTHRUT({payload:{rut:rut, pubPem: res.pubPem}}));
         this.router.navigate(['login/password']);
       }else{alert("Missing data")}})
     : alert("Missing data");
   }
 
   inDB(rut: string){
-    const headers = new HttpHeaders({'dv':rut.slice(-1), 'rut': rut.substring(0, rut.length - 1)});
+    const headers = rutHeaders(rut);
     return this.loginService.lInDB(headers).pipe(take(1))
   }
 }

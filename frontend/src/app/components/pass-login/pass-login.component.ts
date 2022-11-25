@@ -7,9 +7,9 @@ import { JSEncrypt } from 'jsencrypt'
 import { LoginService } from 'src/app/services/login.service';
 import { catchError, concatMap, of, take, throwError } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { AppState } from 'src/app/app.reducers';
+import { AppState, selectRutAndPubPem } from 'src/app/app.reducers';
 import { rutHeaders } from '../shared/rut.headers';
-import { AuthRutAction } from '../redux/actions/rut.actions';
+import { AUTHORIZED } from '../redux/actions/rut.actions';
 
 @Component({
   selector: 'app-pass-login',
@@ -19,6 +19,7 @@ import { AuthRutAction } from '../redux/actions/rut.actions';
 export class PassLoginComponent implements OnInit {
 
   rut: string;
+  pubPem: string;
   headers: HttpHeaders;
   public signInForm !: FormGroup ;
   constructor(
@@ -26,8 +27,11 @@ export class PassLoginComponent implements OnInit {
     private router: Router,
     private loginService: LoginService,
     private store: Store<AppState>) {
-      this.store.select('rut').subscribe(res=>{
-        (res)?this.rut = res: this.router.navigate(['login']);
+      this.store.select(selectRutAndPubPem).
+      subscribe(res=>{
+        if(res.rut){
+          this.rut = res.rut; this.pubPem = res.pubPem;
+        }else{this.router.navigate(['login']);}
       });
     }
 
@@ -43,8 +47,7 @@ export class PassLoginComponent implements OnInit {
     this.getKeyRut()
     .subscribe(res=>{
       if(res["code"] === 200){
-        const actionRut = new AuthRutAction('Authorized');
-        this.store.dispatch(actionRut);
+        this.store.dispatch(AUTHORIZED());
         this.router.navigate(['done']);
       }else{
         alert("Unauthorized acces")
@@ -55,16 +58,10 @@ export class PassLoginComponent implements OnInit {
     }
   }
   getKeyRut(){
-    return this.loginService.getPubPem(this.headers).pipe(take(1),
-    concatMap((result)=>{
-      if(result.pubPem){
-        var encrypt = new JSEncrypt({default_key_size: '2048'});
-        encrypt.setPublicKey(result.pubPem);
-        const encryptedPass = encrypt.encrypt(this.signInForm.value['pass']);
-        return this.toNext(encryptedPass);
-      }
-      return of({});
-    }))
+    var encrypt = new JSEncrypt({default_key_size: '2048'});
+    encrypt.setPublicKey(this.pubPem);
+    const encryptedPass = encrypt.encrypt(this.signInForm.value['pass']);
+    return this.toNext(encryptedPass);
   }
 
   toNext(pass: any){
