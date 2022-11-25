@@ -8,6 +8,8 @@ import { validate } from '../shared/rut.validate';
 //import { AuthRutAction, ResetAction } from '../redux/actions/rut.actions';
 import { AppState } from 'src/app/app.reducers';
 import { Store } from '@ngrx/store';
+import { AUTHRUT, RESET } from '../redux/actions/rut.actions';
+import { rutHeaders } from '../shared/rut.headers';
 
 @Component({
   selector: 'app-rut-sign-up',
@@ -16,6 +18,7 @@ import { Store } from '@ngrx/store';
 })
 export class RutSignUpComponent implements OnInit {
 
+  rut: string;
   public signUpForm !: FormGroup;
   constructor(
     private formBuilder: FormBuilder,
@@ -25,29 +28,27 @@ export class RutSignUpComponent implements OnInit {
     ) { }
 
   ngOnInit(): void {
-    // const action = new ResetAction();
-    // this.store.dispatch(action);
+    this.store.dispatch(RESET());
     this.signUpForm = this.formBuilder.group({
       rut: ['',[Validators.required, Validators.minLength(7), Validators.maxLength(10)]]
     })
   }
 
   signUp(){
-    const rut = this.signUpForm.value["rut"];
-    const dv = rut.slice(-1);
-    const digits = rut.substring(0, rut.length - 1);
+    this.rut = this.signUpForm.value["rut"];
+    const dv = this.rut.slice(-1);
+    const digits = this.rut.substring(0, this.rut.length - 1);
 
     (validate(digits, dv) && this.signUpForm.valid)?
-    this.inDB(rut).subscribe(res=>{
+    this.inDB().subscribe(res=>{
       if(res.code === 200){
-        // const actionRut = new AuthRutAction(rut);
-        // this.store.dispatch(actionRut);
+        this.store.dispatch(AUTHRUT({payload:{rut:this.rut, pubPem: res.pubPem}}));
         this.router.navigate(['signup/password'])
       }else{alert("Invalid data")}
     }): alert("Invalid data");
   }
-  inDB(rut: string){
-    const headers = new HttpHeaders({'dv':rut.slice(-1), 'rut': rut.substring(0, rut.length - 1)});
+  inDB(){
+    const headers = rutHeaders(this.rut);
     return this.loginService.sUpInDB(headers).pipe(take(1))
   }
 

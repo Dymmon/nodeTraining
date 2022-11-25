@@ -6,7 +6,7 @@ import { LoginService } from 'src/app/services/login.service';
 import { concatMap, of, take } from 'rxjs';
 import { JSEncrypt } from 'jsencrypt'
 import { Store } from '@ngrx/store';
-import { AppState } from 'src/app/app.reducers';
+import { AppState, selectRutAndPubPem } from 'src/app/app.reducers';
 import { rutHeaders } from '../shared/rut.headers';
 
 
@@ -18,6 +18,7 @@ import { rutHeaders } from '../shared/rut.headers';
 export class PassSignUpComponent implements OnInit {
 
   rut: string;
+  pubPem: string;
   headers: HttpHeaders;
   public signUpForm !: FormGroup;
   constructor(
@@ -25,9 +26,12 @@ export class PassSignUpComponent implements OnInit {
     private router: Router,
     private loginService: LoginService,
     private store: Store<AppState>) {
-      // this.store.select('rut').subscribe(res=>{
-      //   (res)?this.rut = res: this.router.navigate(['login']);
-      // })
+      this.store.select(selectRutAndPubPem).
+      subscribe(res=>{
+        if(res.rut){
+          this.rut = res.rut; this.pubPem = res.pubPem;
+        }else{this.router.navigate(['login']);}
+      });
     }
 
   ngOnInit(): void {
@@ -49,15 +53,9 @@ export class PassSignUpComponent implements OnInit {
   }
 
   getKeyRut(){
-    return this.loginService.getPubPem(this.headers).pipe(take(1),
-        concatMap((result) =>{
-          if(result.pubPem){
-            var encrypt = new JSEncrypt({default_key_size: '2048'});
-            encrypt.setPublicKey(result.pubPem);
-            const encryptedPass = encrypt.encrypt(this.signUpForm.value['pass1']);
-            return this.loginService.postSignUp(encryptedPass, this.headers);
-          }
-          return of({})
-        }));
+    var encrypt = new JSEncrypt({default_key_size: '2048'});
+    encrypt.setPublicKey(this.pubPem);
+    const encryptedPass = encrypt.encrypt(this.signUpForm.value['pass1']);
+    return this.loginService.postSignUp(encryptedPass, this.headers);
   }
 }

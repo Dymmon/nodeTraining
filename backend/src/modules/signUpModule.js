@@ -19,13 +19,13 @@ async function rutInDB(req, res){
             });
             return newUser.save((err) =>{
                 if(err) return res.status(500);
-                return res.send({code: 200});
+                return res.send({code: 200, pubPem});
             })
         }
         const response = await compare('0',user['password']);
         if(response){
             await userModel.findOneAndUpdate({rut: digits},{pubPem, privPem});
-            return res.send({code:200});
+            return res.send({code:200, pubPem});
         }
         return res.send({code:500})
     } catch (error) {
@@ -37,13 +37,9 @@ async function signUp(req, res){
     if(!validate.credentials(req)) return res.status(500).send({message: "Missing info"});
     const user = await userModel.findOne({ rut: req.headers.rut });
     const pass = Buffer.from(req.body.password, 'base64');
-    const decrypted = crypto.privateDecrypt(
-    {
+    const decrypted = crypto.privateDecrypt({
         key: user.privPem,
-        padding: crypto.constants.RSA_PKCS1_PADDING,
-    },
-    pass
-    );
+        padding: crypto.constants.RSA_PKCS1_PADDING},pass);
     const decryptedPass = decrypted.toString();
     bcrypt-bcrypt.genSalt(10, (err, salt) =>{
         if (err) return res.status(500);
