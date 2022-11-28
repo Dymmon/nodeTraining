@@ -7,7 +7,7 @@ import { of } from 'rxjs';
 import { map, catchError, exhaustMap } from 'rxjs/operators';
 import { LoginService } from 'src/app/services/login.service';
 import { rutHeaders } from '../../shared/rut.headers';
-import { AUTHORIZED, AUTHTOKEN, REQUIRED } from '../actions/rut.actions';
+import * as rutActions from '../actions/rut.actions'
 import { AppState, selectUserPass, selectUserRut } from '../app.reducers';
 
 @Injectable()
@@ -16,23 +16,32 @@ export class RutEffects {
   rut: string;
   token: string;
   login$ = createEffect(() => this.actions$.pipe(
-    ofType(REQUIRED),
+    ofType(rutActions.REQUIRED),
     exhaustMap(() =>{
       const headers = rutHeaders(this.rut);
       return this.loginService.postLogin(this.password, headers).pipe(
         map(res => {
           this.token = res.token;
-          return AUTHTOKEN({payload: {token: this.token}})
+          return rutActions.AUTHTOKEN({payload: {token: this.token}})
         }),catchError(() => of()))
       })));
   done$ = createEffect(()=> this.actions$.pipe(
-    ofType(AUTHTOKEN),
+    ofType(rutActions.AUTHTOKEN),
     exhaustMap(() =>{
       const headers = new HttpHeaders({'authorization': this.token});
       return this.loginService.getDone(headers).pipe(
         map(res => {
           (res['code'] === 200)? this.router.navigate(['done']): this.router.navigate(['login']);
-          return AUTHORIZED();
+          return rutActions.AUTHORIZED();
+        }),catchError(() => of()))
+      })));
+  register$ = createEffect(() => this.actions$.pipe(
+    ofType(rutActions.REGISTER),
+    exhaustMap(() =>{
+      const headers = rutHeaders(this.rut);
+      return this.loginService.postSignUp(this.password, headers).pipe(
+        map(res => {
+          return rutActions.AUTHTOKEN({payload: {token: this.token}})
         }),catchError(() => of()))
       })));
   constructor(

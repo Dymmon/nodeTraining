@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import { AppState} from 'src/app/components/redux/app.reducers';
-import { AUTHORIZED, AUTHRUT, AUTHTOKEN, REQUIRED, RESET } from '../actions/rut.actions';
+import * as rutActions from '../actions/rut.actions'
 
 export const initialState: AppState = {
     rut: null,
@@ -12,29 +12,35 @@ export const initialState: AppState = {
 
 export const rutReducer = createReducer(
   initialState,
-  on(AUTHRUT, (state, {payload}) => ({
+  on(rutActions.AUTHRUT, (state, {payload}) => ({
     rut: payload.rut,
     pubPem: payload.pubPem,
     authorized:state.authorized,
     password: state.password,
     token: state.token})),
-  on(REQUIRED, (state, {payload}) => ({
+  on(rutActions.REQUIRED, (state, {payload}) => ({
     rut: state.rut,
     pubPem: state.pubPem,
     authorized: state.authorized,
     password: payload.password,
     token: state.token})),
-  on(AUTHTOKEN, (state, {payload}) =>({
+  on(rutActions.AUTHTOKEN, (state, {payload}) =>({
     rut: state.rut,
     pubPem: state.pubPem,
     authorized: state.authorized,
     password: state.password,
     token: payload.token})),
-  on(AUTHORIZED,(state)=> ({
+  on(rutActions.AUTHORIZED,(state)=> ({
     rut: state.rut,
     pubPem: state.pubPem,
     authorized: true,
     password: state.password,
     token: state.token})),
-  on(RESET, (state)=>(initialState))
+  on(rutActions.REGISTER,(state, {payload})=> ({
+    rut: state.rut,
+    pubPem: state.pubPem,
+    authorized: state.authorized,
+    password: payload.password,
+    token: state.token})),
+  on(rutActions.RESET, (state)=>(initialState))
 );

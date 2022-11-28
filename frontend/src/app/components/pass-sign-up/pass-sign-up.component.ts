@@ -3,11 +3,11 @@ import { FormGroup, FormBuilder, Validators  } from '@angular/forms';
 import { HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { LoginService } from 'src/app/services/login.service';
-import { concatMap, of, take } from 'rxjs';
-import { JSEncrypt } from 'jsencrypt'
 import { Store } from '@ngrx/store';
 import { AppState, selectRutAndPubPem } from 'src/app/components/redux/app.reducers';
 import { rutHeaders } from '../shared/rut.headers';
+import { getKeyRut } from '../shared/rut.encrypt';
+import { REGISTER } from '../redux/actions/rut.actions';
 
 
 @Component({
@@ -43,19 +43,11 @@ export class PassSignUpComponent implements OnInit {
   }
 
   signUp(){
-    const pass = this.signUpForm.value["pass1"];
-    (pass === this.signUpForm.value["pass2"])?this.getKeyRut()
-    .subscribe(res =>{
-      alert("Signup Successfull");
+    const password = this.signUpForm.value["pass1"];
+    if(password === this.signUpForm.value["pass2"]){
+      const pass = getKeyRut(this.pubPem, password);
+      this.store.dispatch(REGISTER({payload:{password: pass, headers: this.headers}}));
       this.router.navigate(['login']);
-    })
-    :alert("Invalid credentials");
-  }
-
-  getKeyRut(){
-    var encrypt = new JSEncrypt({default_key_size: '2048'});
-    encrypt.setPublicKey(this.pubPem);
-    const encryptedPass = encrypt.encrypt(this.signUpForm.value['pass1']);
-    return this.loginService.postSignUp(encryptedPass, this.headers);
+    }else alert("Invalid credentials");
   }
 }

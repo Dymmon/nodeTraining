@@ -18,3 +18,7 @@ export const AUTHORIZED = createAction(
 export const RESET = createAction(
     '[Rut] Reset'
 );
+export const REGISTER = createAction(
+    '[Rut] Register',
+    props<{payload: any}>()
+)
