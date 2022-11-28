@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators  } from '@angular/forms';
 import { HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { LoginService } from 'src/app/services/login.service';
 import { Store } from '@ngrx/store';
 import { AppState, selectRutAndPubPem } from 'src/app/components/redux/app.reducers';
 import { rutHeaders } from '../shared/rut.headers';
@@ -24,7 +23,6 @@ export class PassSignUpComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
-    private loginService: LoginService,
     private store: Store<AppState>) {
       this.store.select(selectRutAndPubPem).
       subscribe(res=>{

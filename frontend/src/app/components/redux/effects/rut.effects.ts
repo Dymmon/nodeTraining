@@ -12,9 +12,12 @@ import { AppState, selectUserPass, selectUserRut } from '../app.reducers';
 
 @Injectable()
 export class RutEffects {
+
   password: string;
   rut: string;
   token: string;
+
+
   login$ = createEffect(() => this.actions$.pipe(
     ofType(rutActions.REQUIRED),
     exhaustMap(() =>{
@@ -24,7 +27,11 @@ export class RutEffects {
           this.token = res.token;
           return rutActions.AUTHTOKEN({payload: {token: this.token}})
         }),catchError(() => of()))
-      })));
+      })
+    )
+  );
+
+
   done$ = createEffect(()=> this.actions$.pipe(
     ofType(rutActions.AUTHTOKEN),
     exhaustMap(() =>{
@@ -34,7 +41,11 @@ export class RutEffects {
           (res['code'] === 200)? this.router.navigate(['done']): this.router.navigate(['login']);
           return rutActions.AUTHORIZED();
         }),catchError(() => of()))
-      })));
+      })
+    )
+  );
+
+
   register$ = createEffect(() => this.actions$.pipe(
     ofType(rutActions.REGISTER),
     exhaustMap(() =>{
@@ -44,12 +55,15 @@ export class RutEffects {
           return rutActions.AUTHTOKEN({payload: {token: this.token}})
         }),catchError(() => of()))
       })));
+
+
   constructor(
     private actions$: Actions,
     private loginService: LoginService,
     private router: Router,
     private store: Store<AppState>
-  ) {this.store.select(selectUserPass)
+  ) {
+    this.store.select(selectUserPass)
     .subscribe(res =>{
       this.password = res;
       this.store.select(selectUserRut).subscribe(res => this.rut = res);
