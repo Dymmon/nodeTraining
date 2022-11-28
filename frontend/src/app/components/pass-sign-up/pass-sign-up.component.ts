@@ -6,7 +6,7 @@ import { LoginService } from 'src/app/services/login.service';
 import { concatMap, of, take } from 'rxjs';
 import { JSEncrypt } from 'jsencrypt'
 import { Store } from '@ngrx/store';
-import { AppState, selectRutAndPubPem } from 'src/app/app.reducers';
+import { AppState, selectRutAndPubPem } from 'src/app/components/redux/app.reducers';
 import { rutHeaders } from '../shared/rut.headers';
 
 

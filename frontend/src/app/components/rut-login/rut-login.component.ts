@@ -1,13 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
-
 import { LoginService } from 'src/app/services/login.service';
 import { take } from 'rxjs';
-// import { AuthRutAction, ResetAction } from '../redux/actions/rut.actions';
 import { Store } from '@ngrx/store';
-import { AppState } from 'src/app/app.reducers';
+import { AppState } from 'src/app/components/redux/app.reducers';
 import { AUTHRUT, RESET } from '../redux/actions/rut.actions';
 import { rutHeaders } from '../shared/rut.headers';
 

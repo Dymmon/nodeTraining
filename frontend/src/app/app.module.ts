@@ -14,6 +14,8 @@ import { RutSignUpComponent } from './components/rut-sign-up/rut-sign-up.compone
 import { PassSignUpComponent } from './components/pass-sign-up/pass-sign-up.component';
 import { StoreModule } from '@ngrx/store';
 import { rutReducer } from './components/redux/reducers/rut.reducer';
+import { EffectsModule } from '@ngrx/effects';
+import { RutEffects } from './components/redux/effects/rut.effects';
 
 @NgModule({
   declarations: [
@@ -32,7 +34,8 @@ import { rutReducer } from './components/redux/reducers/rut.reducer';
     ReactiveFormsModule,
     NgbModule,
     HttpClientModule,
-    StoreModule.forRoot({rut: rutReducer})
+    StoreModule.forRoot({rut:rutReducer}),
+    EffectsModule.forRoot([RutEffects])
   ],
   providers: [],
   bootstrap: [AppComponent]

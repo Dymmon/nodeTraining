@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { AppState, selectUserAuthorized } from 'src/app/app.reducers';
+import { AppState, selectUserAuthorized } from 'src/app/components/redux/app.reducers';
 
 @Component({
   selector: 'app-done',

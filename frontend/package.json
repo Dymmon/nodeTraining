@@ -27,6 +27,7 @@
     "@angular/cli": "~14.2.9",
     "@angular/compiler-cli": "^14.2.0",
     "@ng-bootstrap/ng-bootstrap": "^13.1.0",
+    "@ngrx/effects": "^14.3.2",
     "@ngrx/store": "^14.3.2",
     "@types/jasmine": "~4.0.0",
     "encrypt-rsa": "^2.1.2",

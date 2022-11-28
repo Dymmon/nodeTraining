@@ -6,7 +6,7 @@ import { LoginService } from 'src/app/services/login.service';
 import { take } from 'rxjs';
 import { validate } from '../shared/rut.validate';
 //import { AuthRutAction, ResetAction } from '../redux/actions/rut.actions';
-import { AppState } from 'src/app/app.reducers';
+import { AppState } from 'src/app/components/redux/app.reducers';
 import { Store } from '@ngrx/store';
 import { AUTHRUT, RESET } from '../redux/actions/rut.actions';
 import { rutHeaders } from '../shared/rut.headers';
