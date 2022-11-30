@@ -27,16 +27,10 @@ const signIn = (req,res) =>{
     return response;
 };
 
-const getPubPem = (req, res) =>{
-    const response = signInModule.getPubPem(req, res);
-    return response;
-}
-
 module.exports = {
     checkCredentials,
     signUp,
     signUpRutInDB,
     loginRutInDB,
-    signIn,
-    getPubPem
+    signIn
 };

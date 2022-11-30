@@ -1,5 +1,6 @@
 const validate = require("../modules/loginModule");
 const userModel = require("../models/user");
+const sharedPasswords = require('../shared/passwords');
 const bcrypt = require("bcrypt-nodejs");
 const crypto = require("crypto");
 
@@ -8,7 +9,7 @@ async function rutInDB(req, res){
         const digits = req.headers.rut;
         const digitV = req.headers.dv;
         const user = await userModel.findOne({rut: digits, dv:digitV});
-        const {pubPem, privPem} = encrypt(digits);
+        const {pubPem, privPem} = sharedPasswords.encrypt(digits);
         if(!user){
             const newUser = new userModel({
                 rut: digits,
@@ -22,7 +23,7 @@ async function rutInDB(req, res){
                 return res.send({code: 200, pubPem});
             })
         }
-        const response = await compare('0',user['password']);
+        const response = await sharedPasswords.compare('0',user['password']);
         if(response){
             await userModel.findOneAndUpdate({rut: digits},{pubPem, privPem});
             return res.send({code:200, pubPem});
@@ -50,25 +51,6 @@ async function signUp(req, res){
         })
     })
 };
-
-function compare(password1, password2){
-    return new Promise ((resolve, reject) =>{
-        bcrypt.compare(password1, password2, (err, response) =>{
-            if(err) reject(err);
-            resolve(response);
-        })
-    });
-
-}
-
-function encrypt(rut) {
-    const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
-        publicKeyEncoding: { type: "spki", format: "pem" },
-        privateKeyEncoding: { type: "pkcs8", format: "pem" },
-        modulusLength: 2048,
-    });
-    return { pubPem: publicKey, privPem: privateKey };
-}  
 
 module.exports = {
     signUp,

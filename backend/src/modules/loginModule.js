@@ -34,4 +34,4 @@ const credentials = (req) =>{
     return true;
 };
 
-module.exports = {credentials};
+module.exports = {credentials, validate};
