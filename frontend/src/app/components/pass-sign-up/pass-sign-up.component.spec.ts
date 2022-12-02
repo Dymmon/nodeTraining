@@ -1,4 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { StoreModule } from '@ngrx/store';
+import { rutReducer } from '../redux/reducers/rut.reducer';
 
 import { PassSignUpComponent } from './pass-sign-up.component';
 
@@ -8,7 +11,12 @@ describe('PassSignUpComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PassSignUpComponent ]
+      declarations: [ PassSignUpComponent ],
+      imports:[
+        StoreModule.forRoot({rut: rutReducer}),
+        FormsModule,
+        ReactiveFormsModule,
+      ]
     })
     .compileComponents();
 
@@ -17,7 +25,8 @@ describe('PassSignUpComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+  it('passSignUp should be defined', () => {
+    expect(component).toBeDefined();
+  })
+
 });

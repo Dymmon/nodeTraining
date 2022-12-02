@@ -17,7 +17,8 @@ describe('ErrorComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+  it('Error should be defined', () => {
+    expect(component).toBeDefined();
+  })
+
 });

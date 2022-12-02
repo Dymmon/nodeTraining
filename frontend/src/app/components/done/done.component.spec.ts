@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { StoreModule } from '@ngrx/store';
+import { rutReducer } from '../redux/reducers/rut.reducer';
 
 import { DoneComponent } from './done.component';
 
@@ -8,7 +10,8 @@ describe('DoneComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DoneComponent ]
+      declarations: [ DoneComponent ],
+      imports: [StoreModule.forRoot({rut: rutReducer})]
     })
     .compileComponents();
 
@@ -16,8 +19,8 @@ describe('DoneComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+  it('Done should be defined', ()=>{
+    expect(component).toBeDefined();
+  })
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
 });

@@ -1,4 +1,8 @@
+import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { StoreModule } from '@ngrx/store';
+import { rutReducer } from '../redux/reducers/rut.reducer';
 
 import { RutLoginComponent } from './rut-login.component';
 
@@ -8,7 +12,13 @@ describe('RutLoginComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ RutLoginComponent ]
+      declarations: [ RutLoginComponent ],
+      imports: [
+        StoreModule.forRoot({rut: rutReducer}),
+        FormsModule,
+        ReactiveFormsModule,
+        HttpClientModule,
+      ]
     })
     .compileComponents();
 
@@ -17,7 +27,8 @@ describe('RutLoginComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+  it('rutLogin should be defined', () => {
+    expect(component).toBeDefined();
+  })
+
 });

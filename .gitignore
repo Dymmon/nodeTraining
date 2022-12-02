@@ -5,6 +5,7 @@
 !.vscode/extensions.json
 !.vscode/*.code-snippets
 /frontend/.angular/*
+/backend/coverage/*
 
 # Local History for Visual Studio Code
 .history/
