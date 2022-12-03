@@ -1,6 +1,13 @@
+import { Injectable } from '@angular/core';
 import { HttpHeaders } from "@angular/common/http";
 
-export function rutHeaders(rut: string){
+@Injectable({
+  providedIn: 'root'
+})
+export class RutHeadersService {
+
+  constructor() { }
+  public rutHeaders(rut: string){
     if(rut){
         const headers = new HttpHeaders({
             'dv': rut.slice(-1),
@@ -13,4 +20,5 @@ export function rutHeaders(rut: string){
         'rut': '11111111'
     });
     return headers;
+  }
 }

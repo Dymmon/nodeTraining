@@ -4,9 +4,9 @@ import { HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { AppState, selectRutAndPubPem } from 'src/app/components/redux/app.reducers';
-import { rutHeaders } from '../shared/rut.headers';
+import { RutHeadersService } from 'src/app/services/headers/rut-headers.service';
 import { REQUIRED } from '../redux/actions/rut.actions';
-import { getKeyRut } from '../shared/rut.encrypt';
+import { RutEncryptService } from 'src/app/services/encrypt/rut-encrypt.service';
 
 @Component({
   selector: 'app-pass-login',
@@ -33,7 +33,8 @@ export class PassLoginComponent implements OnInit {
     }
 
   ngOnInit(): void {
-    this.headers = rutHeaders(this.rut);
+    const headersService = new RutHeadersService();
+    this.headers = headersService.rutHeaders(this.rut);
     this.signInForm = this.formBuilder.group({
       pass: ['', Validators.required],
     })
@@ -41,7 +42,8 @@ export class PassLoginComponent implements OnInit {
   
   signIn(){
     if(this.signInForm.valid){
-      const pass = getKeyRut(this.pubPem, this.signInForm.value['pass']);
+      const passService = new RutEncryptService();
+      const pass = passService.encryptPass(this.pubPem, this.signInForm.value['pass']);
       this.store.dispatch(REQUIRED({payload:{password: pass, headers: this.headers}}));
     }else alert("Missing data");
   }

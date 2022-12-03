@@ -2,14 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators  } from '@angular/forms';
 import { HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { LoginService } from 'src/app/services/login.service';
+import { LoginService } from 'src/app/services/login/login.service';
 import { take } from 'rxjs';
-import { validate } from '../shared/rut.validate';
-//import { AuthRutAction, ResetAction } from '../redux/actions/rut.actions';
+import { RutValidateService } from 'src/app/services/validate/rut-validate.service';
 import { AppState } from 'src/app/components/redux/app.reducers';
 import { Store } from '@ngrx/store';
 import { AUTHRUT, RESET } from '../redux/actions/rut.actions';
-import { rutHeaders } from '../shared/rut.headers';
+import { RutHeadersService } from 'src/app/services/headers/rut-headers.service';
 
 @Component({
   selector: 'app-rut-sign-up',
@@ -38,8 +37,9 @@ export class RutSignUpComponent implements OnInit {
     this.rut = this.signUpForm.value["rut"];
     const dv = this.rut.slice(-1);
     const digits = this.rut.substring(0, this.rut.length - 1);
+    const validate = new RutValidateService();
 
-    (validate(digits, dv) && this.signUpForm.valid)?
+    (validate.validate(digits, dv) && this.signUpForm.valid)?
     this.inDB().subscribe(res=>{
       if(res.code === 200){
         this.store.dispatch(AUTHRUT({payload:{rut:this.rut, pubPem: res.pubPem}}));
@@ -48,7 +48,8 @@ export class RutSignUpComponent implements OnInit {
     }): alert("Invalid data");
   }
   inDB(){
-    const headers = rutHeaders(this.rut);
+    const headersService = new RutHeadersService();
+    const headers =  headersService.rutHeaders(this.rut);
     return this.loginService.sUpInDB(headers).pipe(take(1))
   }
 
