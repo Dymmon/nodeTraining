@@ -8,6 +8,8 @@ export class LoginService {
 
   constructor(private http: HttpClient) { }
   public lInDB(rut: HttpHeaders){
+    console.log("askldjasd");
+    console.log(rut['headers']);
     return this.http.get<any>('http://localhost:25565/v1/login/loginrutindb',
     {headers: rut});
   }
