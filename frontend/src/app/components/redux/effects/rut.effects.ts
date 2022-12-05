@@ -16,15 +16,14 @@ export class RutEffects {
   password: string;
   rut: string;
   token: string;
-  headers: HttpHeaders;
 
 
   login$ = createEffect(() => this.actions$.pipe(
     ofType(rutActions.REQUIRED),
     exhaustMap(() =>{
       const headersService = new RutHeadersService();
-      this.headers = headersService.rutHeaders(this.rut);
-      return this.loginService.postLogin(this.password, this.headers).pipe(
+      const headers = headersService.rutHeaders(this.rut);
+      return this.loginService.postLogin(this.password, headers).pipe(
         map(res => {
           this.token = res.token;
           return rutActions.AUTHTOKEN({payload: {token: this.token}})
@@ -51,7 +50,9 @@ export class RutEffects {
   register$ = createEffect(() => this.actions$.pipe(
     ofType(rutActions.REGISTER),
     exhaustMap(() =>{
-      return this.loginService.postSignUp(this.password, this.headers).pipe(
+      const headersService = new RutHeadersService();
+      const headers = headersService.rutHeaders(this.rut);
+      return this.loginService.postSignUp(this.password, headers).pipe(
         map(res => {
           return rutActions.AUTHTOKEN({payload: {token: this.token}})
         }),catchError(() => of()))

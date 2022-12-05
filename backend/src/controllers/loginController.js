@@ -13,7 +13,6 @@ const signUp = (req,res) =>{
 };
 
 const loginRutInDB = (req,res) =>{
-    console.log("asdasdasd");
     const response = signInModule.rutInDB(req, res);
     return response;
 }

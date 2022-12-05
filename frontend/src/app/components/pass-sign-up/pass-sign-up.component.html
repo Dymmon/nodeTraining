@@ -7,13 +7,13 @@
                 <form>
                     <form [formGroup]= "signUpForm">
                         <div class="form-group">
-                          <label for="exampleInputPassword1" class="form-label">Password </label>
-                          <input formControlName="pass1" type="password" class="form-control" id="exampleInputPassword1">
+                          <label class="form-label">Password </label>
+                          <input formControlName="pass1" type="password" class="form-control">
                           <span class="text-danger" *ngIf="signUpForm.controls['pass1'].dirty && signUpForm.hasError('required','pass1')">Password required</span>
                         </div>
                         <div class="form-group">
-                            <label for="exampleInputPassword1" class="form-label">Repeat password </label>
-                            <input formControlName="pass2" type="password" class="form-control" id="exampleInputPassword1">
+                            <label class="form-label">Repeat password </label>
+                            <input formControlName="pass2" type="password" class="form-control">
                             <span class="text-danger" *ngIf="signUpForm.controls['pass2'].dirty && signUpForm.hasError('required','pass2')">Password required</span>
                           </div>
                         <button (click)="signUp()" type="submit" class="loginButton">Register</button>

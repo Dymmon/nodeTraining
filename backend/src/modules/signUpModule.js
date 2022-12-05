@@ -42,6 +42,7 @@ async function signUp(req, res){
         key: user.privPem,
         padding: crypto.constants.RSA_PKCS1_PADDING},pass);
     const decryptedPass = decrypted.toString();
+    console.log(decryptedPass);
     bcrypt-bcrypt.genSalt(10, (err, salt) =>{
         if (err) return res.status(500);
         return bcrypt.hash(decryptedPass, salt, null, async (err, hash) =>{
