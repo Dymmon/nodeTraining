@@ -37,13 +37,14 @@ export class PassLoginComponent implements OnInit {
     this.headers = headersService.rutHeaders(this.rut);
     this.signInForm = this.formBuilder.group({
       pass: ['', Validators.required],
-    })
+    });
   }
   
   signIn(){
     if(this.signInForm.valid){
       const passService = new RutEncryptService();
       const pass = passService.encryptPass(this.pubPem, this.signInForm.value['pass']);
+      console.log(pass);
       this.store.dispatch(REQUIRED({payload:{password: pass, headers: this.headers}}));
     }else alert("Missing data");
   }

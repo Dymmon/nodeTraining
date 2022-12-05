@@ -34,12 +34,11 @@ export class PassSignUpComponent implements OnInit {
 
   ngOnInit(): void {
     const headersService = new RutHeadersService();
-    console.log(this.rut);
     this.headers = headersService.rutHeaders(this.rut);
     this.signUpForm = this.formBuilder.group({
       pass1: ['', Validators.required],
       pass2: ['', Validators.required],
-    })
+    });
   }
 
   signUp(){
