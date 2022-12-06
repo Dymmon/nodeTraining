@@ -5,14 +5,19 @@ const crypto = require("crypto");
 
 async function rutInDB(req, res) {
   try {
+    console.time();
     const digits = req.headers.rut;
-    const user = await userModel.findOne({ rut: digits, dv: req.headers.dv });
+    const user = await userModel.findOne({ rut: digits });
+    console.timeLog();
     if (user) {
       const {pubPem, privPem} = sharedPasswords.encrypt();
+      console.timeLog();
       await userModel.findOneAndUpdate(
         { rut: digits },
         { pubPem, privPem }
       );
+      console.timeLog();
+      console.timeEnd();
       return res.send({ code: 200, pubPem});
     }
     return res.send({ code: 500 });
@@ -30,10 +35,11 @@ async function signIn(req, res) {
       padding: crypto.constants.RSA_PKCS1_PADDING},pass);
     const decryptedPass = decrypted.toString();
     const response = await sharedPasswords.compare(decryptedPass, user.password);
-    if (response)
+    if (response){
+      const token = service.createToken(user);
       return res.status(200).send({
-        token: service.createToken(user),
-      });
+        token
+      });}
     return res.status(500).send({ message: "Invalid Credentials" });
   } catch (error) {
     return res.status(500).send({ message: error });

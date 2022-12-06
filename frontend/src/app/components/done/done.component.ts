@@ -9,13 +9,7 @@ import { AppState, selectUserAuthorized } from 'src/app/components/redux/app.red
   styleUrls: ['./done.component.scss']
 })
 export class DoneComponent implements OnInit {
-  constructor(
-    private store: Store<AppState>,
-    private router: Router,) {
-    this.store.select(selectUserAuthorized).subscribe(res=>{
-      if(!res) this.router.navigate(['login']);
-    })
-  }
+  constructor() { }
 
   ngOnInit(): void {
     }

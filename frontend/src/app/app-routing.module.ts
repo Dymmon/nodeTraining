@@ -6,14 +6,15 @@ import { PassLoginComponent } from './components/pass-login/pass-login.component
 import { PassSignUpComponent } from './components/pass-sign-up/pass-sign-up.component';
 import { RutLoginComponent } from './components/rut-login/rut-login.component';
 import { RutSignUpComponent } from './components/rut-sign-up/rut-sign-up.component';
+import { InitGuard } from './guards/init.guard';
 
 const routes: Routes = [
   {path: '', redirectTo: 'login', pathMatch: 'full'},
   {path:'login', component: RutLoginComponent},
-  {path: 'login/password', component: PassLoginComponent},
+  {path: 'login/password', component: PassLoginComponent, canActivate: [InitGuard]},
   {path:'signup', component: RutSignUpComponent},
-  {path: 'signup/password', component: PassSignUpComponent},
-  {path:'done',component: DoneComponent },
+  {path: 'signup/password', component: PassSignUpComponent, canActivate: [InitGuard]},
+  {path:'done',component: DoneComponent , canActivate: [InitGuard]},
   {path: '**', component: ErrorComponent}
 ];
 

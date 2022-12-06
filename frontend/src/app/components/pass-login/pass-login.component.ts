@@ -25,10 +25,8 @@ export class PassLoginComponent implements OnInit {
     private store: Store<AppState>) {
       this.store.select(selectRutAndPubPem).
       subscribe(res=>{
-        if(res.rut){
-          this.rut = res.rut;
-          this.pubPem = res.pubPem;
-        }else{this.router.navigate(['login']);}
+        this.rut = res.rut;
+        this.pubPem = res.pubPem;
       });
     }
 
